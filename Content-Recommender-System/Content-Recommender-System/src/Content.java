@@ -31,6 +31,51 @@ public class Content {
         this.rating = rating;
     }
 
+    /**
+     * Getter Method: Returning the contents ID
+     * 
+     * @return int - returns the contents ID
+     */
+    public int getID() {
+        return this.id;
+    }
+
+    /**
+     * Getter Method: Returning the contents name
+     * 
+     * @return string - returns the contents name
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * Getter Method: Returning the contents creator
+     * 
+     * @return string - returns the contents creator
+     */
+    public String getCreator() {
+        return this.creator;
+    }
+
+    /**
+     * Getter Method: Returning the contents genre
+     * 
+     * @return string - returns the contents genre
+     */
+    public String[] getGenres() {
+        return this.genre;
+    }
+
+    /**
+     * Getter Method: Returning the content's rating
+     * 
+     * @return string - returns the content's rating
+     */
+    public double getRating() {
+        return this.rating;
+    }
+
     /** Running an instance of the GUI
      * @param args (String[]) - Standard */
     public static void main(String[] args) throws Exception {
