@@ -1,4 +1,5 @@
 // Importing Libraries 
+import java.util.*; 
 
 
 /** Content.java: Obj class
@@ -11,7 +12,7 @@ public class Content {
     private int id;                 // ID od the content (used in the Hashmap)
     private String name;            // Name of the piece of content 
     private String creator;         // Name of the creator
-    private String[] genre;           // Genre the piece of content is under 
+    private ArrayList<String> genre;           // Genre the piece of content is under 
     private double rating;          // The users rating for the piece of content
 
     /**
@@ -22,7 +23,7 @@ public class Content {
      * @param creator (string) - name of the content creator
      * @param genre   (string) - genre the content is under
      * @param rating (double) - rating of the content   */
-    public Content(int id, String name, String creator, String[] genre, double rating) {
+    public Content(int id, String name, String creator, ArrayList<String> genre, double rating) {
         // Assigning the obj's details 
         this.id = id;
         this.name = name;
@@ -63,7 +64,7 @@ public class Content {
      * 
      * @return string - returns the contents genre
      */
-    public String[] getGenres() {
+    public ArrayList<String> getGenres() {
         return this.genre;
     }
 
@@ -76,9 +77,18 @@ public class Content {
         return this.rating;
     }
 
+
+    public void run() {
+        this.genre = new ArrayList<String>(Arrays.asList("Crime", "Mystery"));
+    }
+
+
+
+
     /** Running an instance of the GUI
      * @param args (String[]) - Standard */
     public static void main(String[] args) throws Exception {
         // new GUI();          // running the driver when this file is executed 
+
     }
 }
