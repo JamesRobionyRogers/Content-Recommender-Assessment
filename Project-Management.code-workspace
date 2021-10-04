@@ -4,5 +4,11 @@
 			"path": "Content-Recommender-System"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"java.project.referencedLibraries": [
+			"lib/**/*.jar",
+			"c:\\Users\\James Robiony-Rogers\\OneDrive - Onslow College\\2021 Yr 13\\ecs100 lib\\ecs100.jar"
+		],
+		"maven.view": "hierarchical"
+	}
 }
