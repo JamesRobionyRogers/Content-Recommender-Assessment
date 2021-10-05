@@ -1,0 +1,18 @@
+viewAllContentGUI() {
+    // TESTING: Option 1: Displaying to the console
+
+            // Printing the details to the console
+            // if (true) {
+            //     UI.println("ID: " + content.getID());
+            //     UI.println(content.getName());
+            //     UI.println("Creator: \t" + content.getCreator());
+            //     // Itterating through the generes
+            //     UI.print("Genres: ");
+            //     for (String genre : content.getGenres()) {
+            //         UI.print(genre + ", ");
+            //     }
+            //     UI.println("\nRating: " + content.getRating());
+            //     UI.println(""); // formatting
+            // }
+
+}

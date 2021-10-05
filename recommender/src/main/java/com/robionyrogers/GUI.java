@@ -61,6 +61,7 @@ public class GUI {
 
         UI.setDivider(0);       // Removing the GUI console
 
+
     }
 
     /** GUI component of the addCard method in the Collection class */
@@ -77,7 +78,8 @@ public class GUI {
                     .addText("Director / Artist")
                     .addText("Genres:   *seperated by commas*")
                     .addSlider("Rating:", MIN, MAX, INIT_VALUE, STEP, STEP)
-                    .andWindow().setSize(500, 370).save()
+                    .addLabel("Click enter to continue")
+                    .andWindow().setSize(500, 410).save()
                     .show();        // use .run() instead of show() to open the formBuilder without blocking.
         
         form.getElements().forEach(e -> {
@@ -100,38 +102,19 @@ public class GUI {
         // Processing grnreText to an ArrayList
         ArrayList<String> genres = new ArrayList<String>(Arrays.asList(genreText.split(" , ")));
         
-        // Adding the new content to the collection
-        // FIXME: much check for a null input (when user exits the menu) do not enter content
-        this.cc.addContent(name, creator, genres, rating);
-
-        System.out.println(name + " : " + creator + " : " + genres + " : " + rating);   // TESTING: 
-
- 
-        
-        // // Requesting input from the user   - TESTING: trial with the buttons, gui elemets etc
-        // String name = UI.askString("Name: "); 
-        // String creator = UI.askString("Creator: "); 
-        // UI.println("* provide all genres seperated by commas *"); 
-        // String genreText = UI.askString("Genres: ");                // genres provided seperated by commas
-
-        // // Processing genres into an ArrayList 
-        // ArrayList<String> genres = new ArrayList<String>(Arrays.asList(genreText.split(" , ")));  
-        
-        // double rating; 
-
-        // // Rating exceding 5 stars check
-        // do {
-        //     // Recieving rating input from the user until (Round the rating to 1 dp)
-        //     rating = UI.askDouble("Rating [0.0 - 5.0]: "); }
-        // while (rating < MIN && rating > MAX);       // rating must between MIN & MAX 
-
-        if (contine) {
-            // Rounding the rating to 1dp 
-            // rating = Math.round(rating * 10.0) / 10.0; 
-
-            // Adding the new content to the collection
-            // this.cc.addContent(name, creator, genres, rating);
+        // Checking if the added content is valid 
+        if (!checkContentNull(name, creator)) {
+            // Adding the content to the collection
+            this.cc.addContent(name, creator, genres, rating);
+            UI.printMessage(" Content Added Successfully!");
         }
+
+        else {
+            UI.printMessage(" Content Failed to Add!"); 
+        }
+
+        
+        
     }
 
     /** Displays all of the Content in the collection */
@@ -143,23 +126,7 @@ public class GUI {
 
         this.clearGUI();
         for(Content content : collection) {
-            // TESTING: Option 1: Displaying to the console
-
-            // Printing the details to the console
-            // if (true) {
-            //     UI.println("ID: " + content.getID());
-            //     UI.println(content.getName());
-            //     UI.println("Creator: \t" + content.getCreator());
-            //     // Itterating through the generes
-            //     UI.print("Genres: ");
-            //     for (String genre : content.getGenres()) {
-            //         UI.print(genre + ", ");
-            //     }
-            //     UI.println("\nRating: " + content.getRating());
-            //     UI.println(""); // formatting
-            // }
-
-            // TESTING: Option 2: Displaying to the GUI 
+            // Option 2: Displaying to the GUI 
             // Initialiseing the card 
             
             Card crd = new Card(cntCardID, content.getName(), "content");   // creating a content card 
@@ -194,7 +161,6 @@ public class GUI {
 
     /** Finds the content that the user wants to rate and changes the rating */
     public void rateContentGUI() {
-        // TESTING: Option 1: Recieve input from a 
         // Change to view all screen 
         this.viewAllContentGUI();
 
@@ -226,12 +192,6 @@ public class GUI {
         // Processing input 
         String userTitle = formResults.get(1); 
         double userRating = Double.parseDouble(formResults.get(2));
-
-        // TESTING: Option 2: Recieve input from the text pane 
-        
-        // Recieving the user input 
-        // String userTitle = UI.askString("Title: "); 
-        // double userRating = UI.askDouble("New Rating: "); 
 
         // Assiging a 
         ArrayList<Content> collection = this.cc.getCollection(); 
@@ -497,6 +457,21 @@ public class GUI {
         String pause = this.GUIstate; 
         
     } 
+
+    private boolean checkContentNull(String name, String creator) {
+
+        // Checking name 
+        if (name.equals("")) {
+            return true; 
+        }
+
+        // Checking the creator 
+        if (creator.equals("")) {
+            return true; 
+        }
+
+        return false; 
+    }
 
     /** Used for adding entries for buttons to the HashMap (or maybe ArrayList) */
     private void addButtonsToList() {
