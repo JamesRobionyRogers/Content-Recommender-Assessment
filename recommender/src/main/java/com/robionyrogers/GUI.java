@@ -77,7 +77,7 @@ public class GUI {
                     .addText("Name of the content:")
                     .addText("Director / Artist")
                     .addText("Genres:   *seperated by commas*")
-                    .addSlider("Rating:", MIN, MAX, INIT_VALUE, STEP, STEP)
+                    .addSlider("Star Rating:", MIN, MAX, INIT_VALUE, STEP, STEP)
                     .addLabel("Click enter to continue")
                     .andWindow().setSize(500, 410).save()
                     .show();        // use .run() instead of show() to open the formBuilder without blocking.
@@ -169,11 +169,19 @@ public class GUI {
         final int MAX = 5;
         final int INIT_VALUE = 0;
         final int STEP = 1;
+        ArrayList<String> allTitles = new ArrayList<String>(Arrays.asList("Choose a title:"));
         ArrayList<String> formResults = new ArrayList<String>();
+        ArrayList<Content> collection = this.cc.getCollection(); 
+
+        // Adding all titles to the ArrayList 
+        for (Content cnt : collection) {
+            allTitles.add(cnt.getName());
+        }
 
         // Open dialog box and revieve input 
         Form form = this.booster.createForm("Change Rating of a Title").addLabel("Change the rating of a title in the collection")
-                    .addText("Name of the content:")
+                    // .addText("Name of the content:")
+                    .addSelection("Title:", allTitles)
                     .addSlider("Rating:", MIN, MAX, INIT_VALUE, STEP, STEP)
                     .andWindow().setSize(500, 250).save()
                     .show();        // use .run() instead of show() to open the formBuilder without blocking.
@@ -191,10 +199,8 @@ public class GUI {
 
         // Processing input 
         String userTitle = formResults.get(1); 
-        double userRating = Double.parseDouble(formResults.get(2));
-
-        // Assiging a 
-        ArrayList<Content> collection = this.cc.getCollection(); 
+        double userRating = Double.parseDouble(formResults.get(2)); 
+        
 
         // Itterating through the collection finding the matching content 
         for (Content cnt : collection) {
@@ -381,6 +387,7 @@ public class GUI {
         }
     }
 
+    // TODO: create a method that draws an "X" for the top right/left of the program so the user can exit the program 
 
     /** Checks if the card has been clicked */
     public boolean checkButtonClick(double mouseX, double mouseY, Card crd) {
