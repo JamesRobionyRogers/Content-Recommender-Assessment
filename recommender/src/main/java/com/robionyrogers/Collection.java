@@ -92,8 +92,6 @@ public class Collection {
     public static void main(String[] args) {
         Collection c = new Collection(); // TESTING: creating a collection obj for testing purposes
 
-        // TODO: Test the addContent() method with the String[] array or if ArrayList
-        // needs to be used
         c.addContent("Nyxia", "Scott Reintgen", new ArrayList<String>(Arrays.asList("Crime", "Thriller")), 5);
 
     }

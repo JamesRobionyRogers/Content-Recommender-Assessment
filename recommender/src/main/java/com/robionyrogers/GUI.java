@@ -5,11 +5,11 @@ import ecs100.*;                        // used for the GUI
 import java.util.*;                     // general use 
 
 import de.milchreis.uibooster.*;
-import de.milchreis.uibooster.model.*;
+// import de.milchreis.uibooster.model.*;
 import de.milchreis.uibooster.model.Form;
-import de.milchreis.uibooster.model.FormElement;
-import de.milchreis.uibooster.model.FormElementChangeListener;
-import javax.swing.*;
+// import de.milchreis.uibooster.model.FormElement;
+// import de.milchreis.uibooster.model.FormElementChangeListener;
+// import javax.swing.*;
 
 
 import java.lang.Thread;
@@ -24,10 +24,9 @@ import java.awt.Color;                  // used for setting colours
  */
 public class GUI {
     // Instance vairables
-    private Collection cc;              // declairing the ContentCollection obj
-    private Content content;            // used to store the current content obj
-    private HashMap<Integer, Card> buttons = new HashMap<Integer, Card>();      //   
-    private ArrayList<Card> contentCards = new ArrayList<Card>();               // ArrayList containing cards of content objs 
+    private Collection cc;                                          // declairing the ContentCollection obj
+    private ArrayList<Card> buttons = new ArrayList<Card>();       
+    private ArrayList<Card> contentCards = new ArrayList<Card>();   // ArrayList containing cards of content objs 
     private UiBooster booster = new UiBooster();
 
 
@@ -47,7 +46,7 @@ public class GUI {
         this.cc = new Collection();     // initalising the collection obj 
 
         UI.initialise();                // initialising the UI
-        this.addButtonsToList(); 
+        this.addMenuButtons(); 
         this.setupGUI();
 
         // Adding mouse functionality
@@ -71,7 +70,6 @@ public class GUI {
         final int INIT_VALUE = 0; 
         final int STEP = 1;
         ArrayList<String> formResults = new ArrayList<String>(); 
-        boolean contine = true;         // used for conditions 
 
         Form form = this.booster.createForm("Add Content").addLabel("Add a new Movie/TV Show")
                     .addText("Name of the content:")
@@ -163,7 +161,6 @@ public class GUI {
     public void rateContentGUI() {
         // Change to view all screen 
         this.viewAllContentGUI();
-
         // Setting variables for the box
         final int MIN = 0;
         final int MAX = 5;
@@ -183,7 +180,8 @@ public class GUI {
                     // .addText("Name of the content:")
                     .addSelection("Title:", allTitles)
                     .addSlider("Rating:", MIN, MAX, INIT_VALUE, STEP, STEP)
-                    .andWindow().setSize(500, 250).save()
+                    .addLabel("Click enter to continue")
+                    .andWindow().setSize(500, 290).save()
                     .show();        // use .run() instead of show() to open the formBuilder without blocking.
         
         form.getElements().forEach(e -> {
@@ -218,16 +216,49 @@ public class GUI {
         
     } 
 
-    // FIXME: finish off this method 
+    // FIXME: Draw the card to the screen  
     public void findContentGUI() {
-        // Getting user input 
-        String title = UI.askString("Content Name: "); 
-        double rating = UI.askDouble("Changed Rating: "); 
+        ArrayList<String> allTitles = new ArrayList<String>(Arrays.asList("Choose a title:"));
+        ArrayList<String> formResults = new ArrayList<String>();
+        ArrayList<Content> collection = this.cc.getCollection();
+        this.GUIstate = "view content";
 
-        // Itterate through the collection of content checking for the name 
-        for (Content cnt : this.cc.getCollection()) {
-            if (cnt.getName().equalsIgnoreCase(title)) {
-                this.cc.changeRating(cnt.getName(), rating);
+        // Adding all titles to the ArrayList
+        for (Content cnt : collection) {
+            allTitles.add(cnt.getName());
+        }
+
+        // Open dialog box and revieve input
+        Form form = this.booster.createForm("Display Title")
+                .addLabel("Display The Infomation of a Title")
+                .addSelection("Title:", allTitles)
+                .addLabel("Click enter to continue")
+                .andWindow().setSize(500, 190).save()
+                .show(); // use .run() instead of show() to open the formBuilder without blocking.
+
+        form.getElements().forEach(e -> {
+            // e.getLable() : for getting the lable of the element
+            // e.getValue() : for getting the value of the element returned in a FormElement
+            // obj
+
+            // Casting FormElement to string and storing value
+            String result = e.getValue().toString();
+
+            // Adding results of form to an ArrayList
+            formResults.add(result);
+        });
+
+        // Processing input
+        String userTitle = formResults.get(1);
+
+        // Itterating through the collection finding the matching content
+        for (Content cnt : collection) {
+
+            // Checking for the matching name
+            if (cnt.getName().equalsIgnoreCase(userTitle)) {
+                this.clearGUI();
+                // TODO: Drawing the card to the screen
+                // this.drawButton(card);
             }
         }
     }
@@ -246,9 +277,8 @@ public class GUI {
         int row = 0;
         
         // Itterating through and drawing the cards 
-        for (int btnIndex : this.buttons.keySet()) { 
-            // Creating Card obj instance  
-            Card card = buttons.get(btnIndex); 
+        for (Card card : this.buttons) {
+            int btnIndex = card.id; 
 
             // Assigning the x & y values for the card
             if (btnIndex % 2 == 0 && btnIndex != 0) {row++;}        // assigning new row - adding to y pos
@@ -271,12 +301,7 @@ public class GUI {
     }
 
     /** Draws button with text on it usign some params  
-     * 
-     * @param cardX (int) - card x value 
-     * @param cardY (int) - card y value 
-     * @param buttonWidth (int) - button width 
-     * @param btnText (String) - the text on the button
-     */
+     * @param card (Card obj) - extracts the fields and draws the cards */
     private void drawButton(Card card) {  // int cardX, int cardY, int buttonWidth, int buttonHeight, String btnText, String type
         // Assigning the general button properties
         int cardX = card.cardX;
@@ -421,13 +446,12 @@ public class GUI {
             if (action.equals("clicked")) {
                 
                 // Itterating through the buttons 
-                for (int btnIndex : this.buttons.keySet()) {
-
-                    Card btn = this.buttons.get(btnIndex);
+                for (Card btn : this.buttons) {
+                // for (int btnIndex : this.buttons.keySet()) {
 
                     // Checking if the (x, y) of the mouse click is within a button container
                     if(checkButtonClick(x, y, btn)) {
-                        String btnClicked = btn.btnText;   // DEBUGGING: 
+                        // String btnClicked = btn.btnText;   // DEBUGGING: 
 
                         if (btn.btnText.equalsIgnoreCase("Add Content")) {
                             this.addContentGUI();
@@ -460,8 +484,6 @@ public class GUI {
                 this.GUIstate = "menu"; 
             }
         }
-
-        String pause = this.GUIstate; 
         
     } 
 
@@ -480,14 +502,14 @@ public class GUI {
         return false; 
     }
 
-    /** Used for adding entries for buttons to the HashMap (or maybe ArrayList) */
-    private void addButtonsToList() {
-        // Adding on screen buttons
-        this.buttons.put(0, new Card(0, "Add Content", "menu"));
-        this.buttons.put(1, new Card(1, "View All Content", "menu"));
-        this.buttons.put(2, new Card(2, "Find Content", "menu"));
-        this.buttons.put(3, new Card(3, "Change Rating", "menu")); 
-        this.buttons.put(4, new Card(4, "Quit", "menu"));
+    /** Used for adding entries for buttons to the ArrayList */
+    private void addMenuButtons() {        
+        this.buttons.add(new Card(0, "Add Content", "menu"));
+        this.buttons.add(new Card(1, "View All Content", "menu"));
+        this.buttons.add(new Card(2, "Find Content", "menu"));
+        this.buttons.add(new Card(3, "Change Rating", "menu")); 
+        this.buttons.add(new Card(4, "Get Recommendations", "menu"));
+        this.buttons.add(new Card(5, "Quit", "menu"));
     }
 
     /** Sets the color using a hex code */
@@ -515,8 +537,3 @@ public class GUI {
         new GUI(); 
     }
 }
-
-
-
-// NOTE: Sort out the buttons (buttons dont all work)
-//          Finish off rateContentGUI()
