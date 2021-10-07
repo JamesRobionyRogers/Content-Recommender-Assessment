@@ -27,12 +27,13 @@ public class GUI {
     private Collection cc;                                          // declairing the ContentCollection obj
     private ArrayList<Card> buttons = new ArrayList<Card>();       
     private ArrayList<Card> contentCards = new ArrayList<Card>();   // ArrayList containing cards of content objs 
+    private Card exitButton = new Card(0, "quit", "quit");
     private UiBooster booster = new UiBooster();
 
 
     // GUI: On screen button fields 
     private static final int FONT_SIZE = 18; 
-    private static final int DISPLAY_WIDTH = UI.getCanvasWidth(); 
+    private static final int DISPLAY_WIDTH = UI.getCanvasWidth() + 20; 
     private static final int DISPLAY_HEIGHT = UI.getCanvasHeight();  
     private static final String BG_COLOR = "#0D0D0D"; 
 
@@ -324,9 +325,6 @@ public class GUI {
             
             // Drawing the card (button inside the card) to the GUI
             this.drawButton(card);
-
-            // Removing the GUI console
-            UI.setDivider(0);
         }
         int x = 0;  // DEBUGGING: 
     }
@@ -516,14 +514,18 @@ public class GUI {
         // Setting vairables: 
         final int SIZE = 30;    // width and height 
         int posX = DISPLAY_WIDTH - SIZE;
-        int posY = 0; 
+        int posY = SIZE; 
 
         // Setting colour and font sizes
         this.setColour("#FFFFFF");      // white colour 
         UI.setFontSize(SIZE);
 
         // Drawing the X in the top right hand corner 
-        UI.drawString("X", 100, 100); 
+        UI.drawString("×", posX, posY);
+
+        // Adding properties to the obj
+        this.exitButton.addCard(posX, 0, SIZE, SIZE);
+        this.exitButton.addBtn(posX, 0, SIZE, SIZE);
     } 
 
     /** Checks if the card has been clicked */
@@ -588,7 +590,13 @@ public class GUI {
                             UI.quit();
                         }
                     }
-                } 
+                }
+                
+                if(checkButtonClick(x, y, this.exitButton)) {
+                    UI.quit();
+                }
+                
+
             }
         
         }    
