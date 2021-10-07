@@ -17,6 +17,8 @@ public class Content {
     private ArrayList<String> genre;           // Genre the piece of content is under 
     private double rating;          // The users rating for the piece of content
 
+
+    public Content() {}
     /**
      * Construtor of the Content obj
      * 

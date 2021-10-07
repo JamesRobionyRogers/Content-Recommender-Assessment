@@ -1,7 +1,6 @@
 package com.robionyrogers;
 
 // Importing Librarys 
-import java.util.HashMap; 
 import java.util.ArrayList;
 import java.util.*;
 
@@ -14,30 +13,21 @@ import java.util.*;
  */
 public class Collection {
     // Defigning the fields of the class
-    private HashMap<Integer, Content> map; // initialising the collection map TESTING:
     private ArrayList<Content> collection; // initialising the collection ArrayList
     private int currContentID; //
 
     /** Constructor: initialising the collection & adding content */
     public Collection() {
         // Initialise the collection
-        this.map = new HashMap<Integer, Content>(); // TESTING:
         this.collection = new ArrayList<Content>();
 
-        // Creating Content objs
-        Content c1 = new Content(1, "Lupin", "George Kay", new ArrayList<String>(Arrays.asList("Crime", "Mystery")), 4.1);
-        Content c2 = new Content(2, "Ozark", "Bill Bubuque", new ArrayList<String>(Arrays.asList("Crime", "Thriller")), 4.5);
-        Content c3 = new Content(3, "Narcos", "Chris Brancato", new ArrayList<String>(Arrays.asList("Crime", "Thriller")), 3.5);
-
         // Adding Content to the collection
-        this.map.put(1, c1); // TESTING:
-        this.collection.add(c1);
-        this.map.put(2, c2); // TESTING:
-        this.collection.add(c2);
-        this.map.put(3, c3); // TESTING:
-        this.collection.add(c3);
+        this.collection.add(new Content(1, "Lupin", "George Kay", new ArrayList<String>(Arrays.asList("Crime", "Mystery")), 4.1));
+        this.collection.add(new Content(2, "Ozark", "Bill Bubuque", new ArrayList<String>(Arrays.asList("Crime", "Thriller")), 4.5));
+        this.collection.add(new Content(3, "Narcos", "Chris Brancato", new ArrayList<String>(Arrays.asList("Crime", "Thriller")), 3.5));
+        this.collection.add(new Content(4, "Nyxia", "Scott Reintgen", new ArrayList<String>(Arrays.asList("Thriller")), 5)); 
 
-        this.currContentID = 3;
+        this.currContentID = this.collection.size();
     }
 
     /**
@@ -71,8 +61,7 @@ public class Collection {
     public boolean addContent(String name, String creator, ArrayList<String> genres, double rating) {
         boolean inCollection = false;
 
-        // Boundary Checking: Duplicate name FIXME: There are instnces where there could be two songs/movies with the same name, maybe compear objs and check if the same
-        // be two song/movies with the same name, maybe 
+        // Boundary Checking: Duplicate name FIXME: There are instnces where there could be two songs/movies with the same name, maybe compear objs and check if the same be two song/movies with the same name, maybe 
         for (Content c : this.collection) { // itterate through collection
             if (c.getName().equalsIgnoreCase(name)) { // check if name of content already exists
                 inCollection = true; // stating the name alredy exists in the collection
@@ -90,9 +79,6 @@ public class Collection {
     }
 
     public static void main(String[] args) {
-        Collection c = new Collection(); // TESTING: creating a collection obj for testing purposes
-
-        c.addContent("Nyxia", "Scott Reintgen", new ArrayList<String>(Arrays.asList("Crime", "Thriller")), 5);
-
+        new GUI();  // runs the GUI file 
     }
 }

@@ -23,6 +23,8 @@ public class Card {
     public String type; 
     public Content cnt;    
 
+    public Card() {}
+
     /**
      * 
      * @param id

@@ -58,6 +58,11 @@ public class GUI {
         UI.setColor(Color.black);
         UI.setFontSize(FONT_SIZE);
         UI.setDivider(0);               // removing the GUI console
+
+        // DEBUGGING: 
+        this.setColour("#FFFFFF");
+        UI.drawLine(DISPLAY_WIDTH, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+
     }
 
     /** GUI component of the addCard method in the Collection class */
@@ -125,7 +130,7 @@ public class GUI {
             this.drawButton(crd);
         }
             
-
+        this.drawExitButton();
     }
 
     private void updateContentCards() {
@@ -142,8 +147,8 @@ public class GUI {
 
             // Setting the properties for the content card
             final int PADDING = 20;                                 // card pading
-            int buttonWidth = (DISPLAY_WIDTH / 2) - (4 * PADDING);  // button width
-            int cardWidth = buttonWidth + (2 * PADDING);            // card width
+            int cardWidth = DISPLAY_WIDTH / 2;                      // card width
+            int buttonWidth = cardWidth - (2 * PADDING);            // button width
             int cardHeight = 200;                                   // card height
 
             // Assigning the x & y values
@@ -288,10 +293,95 @@ public class GUI {
                 btn.type = initialType; 
             }
         }
+
+        this.drawExitButton();
     }
 
     public void getRecommendationsGUI() {
-        ;
+        // Get recommendations based off of a title in the collection
+
+        // Setting vairbales
+        ArrayList<String> allTitles = new ArrayList<String>(Arrays.asList("Choose a title:"));
+        ArrayList<String> formResults = new ArrayList<String>();
+        ArrayList<Card> similarContent = new ArrayList<Card>();
+        ArrayList<Content> collection = this.cc.getCollection();
+        Card selectedCard = new Card(); 
+
+        // Selected title's information 
+        String creator;
+        ArrayList<String> genres; 
+
+        // Setting the GUI's state
+        this.GUIstate = "recommendation";        
+
+        // Adding all titles to the ArrayList
+        for (Content cnt : collection) {
+            allTitles.add(cnt.getName());
+        }
+
+        // Printing loading dialog to the GUI 
+        this.clearGUI();                // clearing GUI before printing
+        this.setColour("#FFFFFF"); 
+        UI.setFontSize(50); 
+        UI.drawString("Recommendations Loading...", 40, ((DISPLAY_HEIGHT / 2)- 50)); 
+
+        // Open dialog box and revieve input
+        Form form = this.booster.createForm("Display Title")
+                .addLabel("Display The Infomation of a Title")
+                .addSelection("Title:", allTitles)
+                .addLabel("Click enter to continue")
+                .andWindow().setSize(500, 190).save()
+                .show(); // use .run() instead of show() to open the formBuilder without blocking.
+
+        // Storing input from the form 
+        form.getElements().forEach(e -> {
+            // e.getLable() : for getting the lable of the element
+            // e.getValue() : for getting the value of the element returned in a FormElement obj
+
+            // Casting FormElement to string and storing value
+            String result = e.getValue().toString();
+
+            // Adding results of form to an ArrayList
+            formResults.add(result);
+        });
+
+        // Processing input
+        String userTitle = formResults.get(1);
+
+        // Finding the contentCrad assoceaed to the title 
+        this.updateContentCards();
+        for (Card crd : this.contentCards) {
+            if (crd.cnt.getName().equals(userTitle)) {
+                selectedCard = crd; 
+            }
+        }
+
+        // Extracting the selected content's infomation
+        creator = selectedCard.cnt.getCreator();
+        genres = selectedCard.cnt.getGenres();
+
+        // Adding similar content to the collection 
+        for (Card crd : this.contentCards) {
+            if (crd.cnt.getCreator().equalsIgnoreCase(creator)) {
+                similarContent.add(crd); 
+            }
+            // Refrains form adding content twice: Content w the same creator cant then be double added for having the same genres 
+            else {
+                // Checking for similar generes 
+                for (String g : crd.cnt.getGenres()) {
+                    if (genres.contains(g)) {
+                        similarContent.add(crd); 
+                    }
+                }
+            }
+        }
+
+        // Printing out the similar content cards
+        this.clearGUI();
+        this.drawExitButton();
+        for (Card crd : similarContent) {
+            this.drawButton(crd);
+        }
     }
 
     /** Visualy sets up the GUI */
@@ -302,9 +392,10 @@ public class GUI {
         this.drawExitButton();
 
         // Card Properties 
-        final int PADDING = 40;                                     // card pading 
-        int buttonWidth = (DISPLAY_WIDTH / 2) - (4 * PADDING);      // button width 
-        int cardWidth = buttonWidth + (2 * PADDING);                // card width 
+        final int PADDING = 40;                            // card pading 
+        int cardWidth = DISPLAY_WIDTH / 2;                 // card width
+        int buttonWidth = cardWidth - (2 * PADDING);       // button width 
+        
         int cardHeight = 100;                                       // card height 
         int row = 0;
         
@@ -326,7 +417,6 @@ public class GUI {
             // Drawing the card (button inside the card) to the GUI
             this.drawButton(card);
         }
-        int x = 0;  // DEBUGGING: 
     }
 
     /** Draws button with text on it usign some params  
@@ -345,7 +435,7 @@ public class GUI {
             final int BORDER = 4; 
             final int FONTSIZE = 20; 
             final int FONTPADDING = 28;
-            int buttonWidth = (DISPLAY_WIDTH / 2) - (4 * PADDING);
+            int buttonWidth = ((DISPLAY_WIDTH / 2) - (2 * PADDING));
             int buttonHeight = 50; 
 
             // Setting the button positional values
@@ -377,6 +467,7 @@ public class GUI {
         if (type.equalsIgnoreCase("content")) { 
             // Menu button properties
             final int PADDING = 20;
+            final int EXIT_PADDING = 20;
             final int BORDER = 4;
             final int RATING_FONT = 30; 
             final int TITLE_FONT = 20;
@@ -384,12 +475,13 @@ public class GUI {
             final int BODY_FONT = 12; 
             final int IMG_SIZE = 50;
             int fontPadding = 28;
-            int buttonWidth = (DISPLAY_WIDTH / 2) - (4 * PADDING);
+            int cardWidth = DISPLAY_WIDTH / 2; // card width
+            int buttonWidth = cardWidth - (2 * PADDING); // button width
             int buttonHeight = 180;
 
             // Setting the button positional values
             int btnPosX = cardX + PADDING;
-            int btnPosY = cardY + PADDING;
+            int btnPosY = cardY + PADDING + EXIT_PADDING;
 
             // Assigning the buttons posional values for the doMouse method
             card.addBtn(btnPosX, btnPosY, buttonWidth, buttonHeight);
@@ -553,7 +645,7 @@ public class GUI {
      * @param y
      */
     public void doMouse(String action, double x, double y) {
-        // checking what screen it should be checking 
+        // Checking what screen it should be checking 
         if(this.GUIstate.equals("menu")) {
 
             // Checking for mouse click 
@@ -600,11 +692,30 @@ public class GUI {
             }
         
         }    
+        // View Content Screen
         else if (this.GUIstate.equals("view content")) {
             // Exit view content on mouse click
             if (action.equals("clicked")) {
+                // Quit checking 
+                if (checkButtonClick(x, y, this.exitButton)) {
+                    UI.quit();
+                }
+
                 this.setupGUI(); 
                 this.GUIstate = "menu"; 
+            }
+        }
+        // Recommendations Screen
+        else if (this.GUIstate.equals("recommendation")) {
+            // Exit view content on mouse click
+            if (action.equals("clicked")) {
+                // Quit checking
+                if (checkButtonClick(x, y, this.exitButton)) {
+                    UI.quit();
+                }
+
+                this.setupGUI();
+                this.GUIstate = "menu";
             }
         }
         
