@@ -233,7 +233,6 @@ public class GUI {
         
     } 
 
-    // FIXME: Draw the card to the screen  
     public void findContentGUI() {
         ArrayList<String> allTitles = new ArrayList<String>(Arrays.asList("Choose a title:"));
         ArrayList<String> formResults = new ArrayList<String>();
@@ -253,6 +252,7 @@ public class GUI {
                 .andWindow().setSize(500, 190).save()
                 .show(); // use .run() instead of show() to open the formBuilder without blocking.
 
+        // Storing input from the form 
         form.getElements().forEach(e -> {
             // e.getLable() : for getting the lable of the element
             // e.getValue() : for getting the value of the element returned in a FormElement obj
@@ -268,14 +268,23 @@ public class GUI {
         String userTitle = formResults.get(1);
 
         // Itterating through the collection finding the matching content
+        this.updateContentCards();
         for (Card btn : this.contentCards) {
 
             // Checking for the matching name
             if (btn.cnt.getName().equalsIgnoreCase(userTitle)) {
+                // Storing initial type value of card
+                String initialType = btn.type;
+
+                btn.type = "single content";
+
+
                 this.clearGUI();
                 UI.repaintAllGraphics();
-                // TODO: Drawing the card to the screen
                 this.drawButton(btn);
+
+                // Resetting the card type 
+                btn.type = initialType; 
             }
         }
     }
@@ -285,10 +294,11 @@ public class GUI {
     }
 
     /** Visualy sets up the GUI */
-    public void setupGUI() {                // TESTING: Could use this as part of a Sprint
+    public void setupGUI() {            
         // Background
         this.setColour(BG_COLOR);
-        UI.fillRect(0, 0, 10000, 10000);      // FIXME: (drawing and clearing the backgroud) drawing the background colour 
+        UI.fillRect(0, 0, 10000, 10000);      // FIXME: (drawing and clearing the backgroud) drawing the background colour
+        this.drawExitButton();
 
         // Card Properties 
         final int PADDING = 40;                                     // card pading 
@@ -339,7 +349,6 @@ public class GUI {
             final int FONTPADDING = 28;
             int buttonWidth = (DISPLAY_WIDTH / 2) - (4 * PADDING);
             int buttonHeight = 50; 
-            
 
             // Setting the button positional values
             int btnPosX = cardX + PADDING; 
@@ -375,6 +384,7 @@ public class GUI {
             final int TITLE_FONT = 20;
             final int HEADER_FONT = 16; 
             final int BODY_FONT = 12; 
+            final int IMG_SIZE = 50;
             int fontPadding = 28;
             int buttonWidth = (DISPLAY_WIDTH / 2) - (4 * PADDING);
             int buttonHeight = 180;
@@ -424,16 +434,97 @@ public class GUI {
 
             // Rating:
             String imgSrc = "C:/Users/James Robiony-Rogers/OneDrive - Onslow College/2021 Yr 13/13DTC/2021-08-00 - Project Management/recommender/src/main/java/com/robionyrogers/img/gold-star.png";
-            UI.drawImage(imgSrc, (btnPosX + 10), (btnPosY + fontPadding), 50, 50);
+            UI.drawImage(imgSrc, (btnPosX + 10), (btnPosY + fontPadding), IMG_SIZE, IMG_SIZE);
             fontPadding += BODY_FONT + 25;
             // Rating text
             String ratingText = String.valueOf(card.cnt.getRating()); 
             UI.setFontSize(RATING_FONT);
-            UI.drawString(ratingText, (btnPosX + 75), (btnPosY + fontPadding));
+            UI.drawString(ratingText, (btnPosX + (IMG_SIZE + 25)), (btnPosY + fontPadding));
+        }
+        // Single Content button
+        if (type.equalsIgnoreCase("single content")) {
+            // Menu button properties
+            final int PADDING = 20;
+            final int BORDER = 4;
+            final int RATING_FONT = 30;
+            final int TITLE_FONT = 40;
+            final int HEADER_FONT = 32;
+            final int BODY_FONT = 24;
+            final int IMG_SIZE = 70;
+            int fontPadding = 40; // 28
+
+            int buttonWidth = DISPLAY_WIDTH - (2 * PADDING);
+            int buttonHeight = 300;
+            cardX = 0;
+            cardY = 20;
+
+            // Setting the button positional values
+            int btnPosX = cardX + PADDING;  
+            int btnPosY = cardY + PADDING;
+
+            // Assigning the buttons posional values for the doMouse method
+            card.addBtn(btnPosX, btnPosY, buttonWidth, buttonHeight);
+
+            // Drawing the button
+            // Button Border
+            this.setColour("#870000");
+            UI.fillRect(btnPosX, btnPosY, buttonWidth, buttonHeight);
+
+            // Setting the new positional values for the inner button
+            btnPosX = btnPosX + BORDER;
+            btnPosY = btnPosY + BORDER;
+
+            // Solid Button Inner
+            this.setColour("#E30032");
+            UI.fillRect(btnPosX, btnPosY, (buttonWidth - (2 * BORDER)), (buttonHeight - (2 * BORDER)));
+
+            // Printing text on the buttons
+            this.setColour("#ffffff");
+
+            // Content name
+            UI.setFontSize(TITLE_FONT);
+            UI.drawString(card.cnt.getName(), (btnPosX + 10), (btnPosY + fontPadding));
+            fontPadding += TITLE_FONT + 5;
+
+            // Creator name
+            UI.setFontSize(HEADER_FONT);
+            UI.drawString(card.cnt.getCreator(), (btnPosX + 10), (btnPosY + fontPadding));
+            fontPadding += HEADER_FONT + 15;
+
+            // Genre heading
+            UI.setFontSize(TITLE_FONT);
+            UI.drawString("Genres:", (btnPosX + 10), (btnPosY + fontPadding));
+            fontPadding += TITLE_FONT;
+            // Genre text
+            UI.setFontSize(BODY_FONT);
+            String genreText = String.join(", ", card.cnt.getGenres());
+            UI.drawString(genreText, (btnPosX + 10), (btnPosY + fontPadding));
+            fontPadding += BODY_FONT;
+
+            // Rating:
+            String imgSrc = "C:/Users/James Robiony-Rogers/OneDrive - Onslow College/2021 Yr 13/13DTC/2021-08-00 - Project Management/recommender/src/main/java/com/robionyrogers/img/gold-star.png";
+            UI.drawImage(imgSrc, (btnPosX + 10), (btnPosY + fontPadding), IMG_SIZE, IMG_SIZE);
+            fontPadding += BODY_FONT + 25;
+            // Rating text
+            String ratingText = String.valueOf(card.cnt.getRating());
+            UI.setFontSize(RATING_FONT);
+            UI.drawString(ratingText, (btnPosX + (IMG_SIZE + 25)), (btnPosY + fontPadding));
         }
     }
 
-    // TODO: create a method that draws an "X" for the top right/left of the program so the user can exit the program 
+    public void drawExitButton() {
+        // Setting vairables: 
+        final int SIZE = 30;    // width and height 
+        int posX = DISPLAY_WIDTH - SIZE;
+        int posY = 0; 
+
+        // Setting colour and font sizes
+        this.setColour("#FFFFFF");      // white colour 
+        UI.setFontSize(SIZE);
+
+        // Drawing the X in the top right hand corner 
+        UI.drawString("X", 100, 100); 
+    } 
 
     /** Checks if the card has been clicked */
     public boolean checkButtonClick(double mouseX, double mouseY, Card crd) {
@@ -468,7 +559,6 @@ public class GUI {
                 
                 // Itterating through the buttons 
                 for (Card btn : this.buttons) {
-                // for (int btnIndex : this.buttons.keySet()) {
 
                     // Checking if the (x, y) of the mouse click is within a button container
                     if(checkButtonClick(x, y, btn)) {
