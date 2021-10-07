@@ -48,6 +48,7 @@ public class GUI {
         UI.initialise();                // initialising the UI
         this.addMenuButtons(); 
         this.setupGUI();
+        this.updateContentCards();
 
         // Adding mouse functionality
         UI.setMouseListener(this::doMouse);
@@ -110,15 +111,29 @@ public class GUI {
 
     /** Displays all of the Content in the collection */
     public void viewAllContentGUI() {
-        ArrayList<Content> collection = this.cc.getCollection(); 
-        int cntCardID = 0;                  // index of the content in the collection 
-        int row = 0;
-        boolean inList = false;
         this.GUIstate = "view content";     // used in the doMouse method 
 
+        // Clear the GUI to print cards
         this.clearGUI();
+
+        // Creating and adding new cards to the collection
+        this.updateContentCards();
+
+        // Drawing cards to the screen 
+        for (Card crd : this.contentCards) {
+            this.drawButton(crd);
+        }
+            
+
+    }
+
+    private void updateContentCards() {
+        ArrayList<Content> collection = this.cc.getCollection();
+        int cntCardID = 0; // index of the content in the collection
+        int row = 0;
+        boolean inList = false;
+        // Creating the Content Card        - createContentCard(); 
         for(Content content : collection) {
-            // Option 2: Displaying to the GUI 
             // Initialiseing the card 
             
             Card crd = new Card(cntCardID, content.getName(), "content");   // creating a content card 
@@ -141,13 +156,9 @@ public class GUI {
             // Adding the card's positional values to the obj
             crd.addCard(cardX, cardY, cardWidth, cardHeight);
 
-            this.drawButton(crd);
-
-            // TODO: Continue on w this: checking if Card obj in in the collection 
-
-            // Checking if the Crad obj is already inside the contentCards ArrayList 
+            // Checking if the Card obj is already inside the contentCards ArrayList 
             for (Card tempCard : this.contentCards) {
-                if (tempCard.equals(crd)) {
+                if (crd.cnt.equals(tempCard.cnt)) {
                     inList = true;     
                 } 
             }
@@ -158,10 +169,9 @@ public class GUI {
                 
             }
             
-            cntCardID++; // adding to the index to make the rows work.
+            cntCardID++;        // adding to the index to make the rows work.
             
         }
-
     }
 
     /** Finds the content that the user wants to rate and changes the rating */
@@ -308,7 +318,7 @@ public class GUI {
             // Removing the GUI console
             UI.setDivider(0);
         }
-
+        int x = 0;  // DEBUGGING: 
     }
 
     /** Draws button with text on it usign some params  
