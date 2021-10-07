@@ -52,15 +52,10 @@ public class GUI {
         // Adding mouse functionality
         UI.setMouseListener(this::doMouse);
 
+        // Setting default values for the UI
         UI.setColor(Color.black);
         UI.setFontSize(FONT_SIZE);
-
-
-        // UI.addButton("Quit", UI::quit); 
-
-        UI.setDivider(0);       // Removing the GUI console
-
-
+        UI.setDivider(0);               // removing the GUI console
     }
 
     /** GUI component of the addCard method in the Collection class */
@@ -92,9 +87,9 @@ public class GUI {
         });
 
         // Assign values from ArrayList to vairbales 
-        String name = formResults.get(1); 
-        String creator = formResults.get(2); 
-        String genreText = formResults.get(3); 
+        String name = formResults.get(1).strip(); 
+        String creator = formResults.get(2).strip(); 
+        String genreText = formResults.get(3).strip(); 
         double rating = Double.parseDouble(formResults.get(4));
 
         // Processing grnreText to an ArrayList
@@ -110,8 +105,6 @@ public class GUI {
         else {
             UI.printMessage(" Content Failed to Add!"); 
         }
-
-        
         
     }
 
@@ -120,6 +113,7 @@ public class GUI {
         ArrayList<Content> collection = this.cc.getCollection(); 
         int cntCardID = 0;                  // index of the content in the collection 
         int row = 0;
+        boolean inList = false;
         this.GUIstate = "view content";     // used in the doMouse method 
 
         this.clearGUI();
@@ -149,10 +143,23 @@ public class GUI {
 
             this.drawButton(crd);
 
-            // Adding the card to the contentCards list
-            this.contentCards.add(crd);
+            // TODO: Continue on w this: checking if Card obj in in the collection 
 
-            cntCardID++;         // adding to the index to make the rows work. 
+            // Checking if the Crad obj is already inside the contentCards ArrayList 
+            for (Card tempCard : this.contentCards) {
+                if (tempCard.equals(crd)) {
+                    inList = true;     
+                } 
+            }
+
+            // If the Card isnt in the List, then adding it to the list 
+            if (!inList) {
+                this.contentCards.add(crd);
+                
+            }
+            
+            cntCardID++; // adding to the index to make the rows work.
+            
         }
 
     }
@@ -238,8 +245,7 @@ public class GUI {
 
         form.getElements().forEach(e -> {
             // e.getLable() : for getting the lable of the element
-            // e.getValue() : for getting the value of the element returned in a FormElement
-            // obj
+            // e.getValue() : for getting the value of the element returned in a FormElement obj
 
             // Casting FormElement to string and storing value
             String result = e.getValue().toString();
@@ -252,15 +258,20 @@ public class GUI {
         String userTitle = formResults.get(1);
 
         // Itterating through the collection finding the matching content
-        for (Content cnt : collection) {
+        for (Card btn : this.contentCards) {
 
             // Checking for the matching name
-            if (cnt.getName().equalsIgnoreCase(userTitle)) {
+            if (btn.cnt.getName().equalsIgnoreCase(userTitle)) {
                 this.clearGUI();
+                UI.repaintAllGraphics();
                 // TODO: Drawing the card to the screen
-                // this.drawButton(card);
+                this.drawButton(btn);
             }
         }
+    }
+
+    public void getRecommendationsGUI() {
+        ;
     }
 
     /** Visualy sets up the GUI */
@@ -469,6 +480,10 @@ public class GUI {
                             this.rateContentGUI();
                         }
 
+                        else if (btn.btnText.equals("Recommendations")) {
+                            this.getRecommendationsGUI();
+                        }
+
                         else if (btn.btnText.equalsIgnoreCase("Quit")) {
                             UI.quit();
                         }
@@ -508,7 +523,7 @@ public class GUI {
         this.buttons.add(new Card(1, "View All Content", "menu"));
         this.buttons.add(new Card(2, "Find Content", "menu"));
         this.buttons.add(new Card(3, "Change Rating", "menu")); 
-        this.buttons.add(new Card(4, "Get Recommendations", "menu"));
+        this.buttons.add(new Card(4, "Recommendations", "menu"));
         this.buttons.add(new Card(5, "Quit", "menu"));
     }
 
