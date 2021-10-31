@@ -59,6 +59,8 @@ Given a dataset of movies or music albums, users and their ratings, you are to c
 
 Getting started using this projetc is quite easy. Download a local copy of the project, navigate to the project directory ```recommener/srs/main/java/com/robionyrogers/GUI.java``` and run the file. 
 
+#### Requirements 
+
 ### Installation
 
 1. Clone the repo using Git

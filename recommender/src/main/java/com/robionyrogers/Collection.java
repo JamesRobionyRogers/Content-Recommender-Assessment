@@ -26,6 +26,7 @@ public class Collection {
         this.collection.add(new Content(2, "Ozark", "Bill Bubuque", new ArrayList<String>(Arrays.asList("Crime", "Thriller")), 4.5));
         this.collection.add(new Content(3, "Narcos", "Chris Brancato", new ArrayList<String>(Arrays.asList("Crime", "Thriller")), 3.5));
         this.collection.add(new Content(4, "Nyxia", "Scott Reintgen", new ArrayList<String>(Arrays.asList("Thriller")), 5)); 
+        this.collection.add(new Content(5, "YSIV", "Logic", new ArrayList<String>(Arrays.asList("Rap, Hip-Hop")), 4.2)); 
 
         this.currContentID = this.collection.size();
     }

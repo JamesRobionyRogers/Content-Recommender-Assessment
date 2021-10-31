@@ -28,6 +28,9 @@ public class GUI {
     private ArrayList<Card> buttons = new ArrayList<Card>();       
     private ArrayList<Card> contentCards = new ArrayList<Card>();   // ArrayList containing cards of content objs 
     private Card exitButton = new Card(0, "quit", "quit");
+    // View all content fields 
+    private ArrayList<Card> navBtns = new ArrayList<Card>();
+    private int page = 1; 
     private UiBooster booster = new UiBooster();
 
 
@@ -48,7 +51,7 @@ public class GUI {
 
         UI.initialise();                // initialising the UI
         this.addMenuButtons(); 
-        this.setupGUI();
+        this.setupMenu();
         this.updateContentCards();
 
         // Adding mouse functionality
@@ -117,20 +120,63 @@ public class GUI {
 
     /** Displays all of the Content in the collection */
     public void viewAllContentGUI() {
+        // Fields 
+        int pageNum = this.page; 
+        int cardIndx = 0; 
+
+        int cardWidth = 100; 
+        int cardHeight = 50; 
+        int padding = 20; 
+        
+        // Setting up the nav buttons
+        Card nextPage = new Card(0, "Next Page", "nav");
+        Card prevPage = new Card(1, "Prev Page", "nav");
+        nextPage.addCard((DISPLAY_WIDTH - cardWidth), (DISPLAY_HEIGHT - cardHeight), cardWidth, cardHeight);
+        prevPage.addCard(0, (DISPLAY_HEIGHT - cardHeight), cardWidth, cardHeight);
+        
+        // Adding the nav buttons to the navBtns list     : = new ArrayList<Card>(Arrays.asList(nextPage, prevPage));
+        if (!this.navBtns.contains(nextPage) && !this.navBtns.contains(prevPage)) {
+            this.navBtns.add(nextPage);
+            this.navBtns.add(prevPage);
+        }
+        
+
+        // Setting GUI state 
         this.GUIstate = "view content";     // used in the doMouse method 
 
-        // Clear the GUI to print cards
-        this.clearGUI();
+        // Reset the GUI 
+        this.setupGUI();
 
-        // Creating and adding new cards to the collection
+        // Updating the contnet cards
         this.updateContentCards();
 
         // Drawing cards to the screen 
         for (Card crd : this.contentCards) {
-            this.drawButton(crd);
-        }
+            // Defining the accepted ID's 
+            int startingAcceptedID = (this.page * 4)-1; 
+            ArrayList<Integer> acceptedIDs = new ArrayList<Integer>(Arrays.asList(startingAcceptedID, startingAcceptedID-1, startingAcceptedID-2, startingAcceptedID-3));
             
-        this.drawExitButton();
+            // Checking if the card should be printed 
+            if (acceptedIDs.contains(crd.id)) {
+                cardIndx++;
+                // crd.addCard(cardX, cardY, cardWidth, cardHeight);       // TESTING: changing the card pos for correct posistioning on page 2+ 
+                this.drawButton(crd);
+
+                // Adding navigation buttons for content thats
+                if (cardIndx == 4) {
+                    // Printing out the navigation buttons
+                    for (Card nav : this.navBtns) {
+                        this.drawButton(nav);
+                    }
+
+                    break; // breaked out of the for loop
+                }
+
+            }
+            }
+            
+            
+        
     }
 
     private void updateContentCards() {
@@ -140,8 +186,8 @@ public class GUI {
         boolean inList = false;
         // Creating the Content Card        - createContentCard(); 
         for(Content content : collection) {
+            inList = false;     // resetting the inList var each time
             // Initialiseing the card 
-            
             Card crd = new Card(cntCardID, content.getName(), "content");   // creating a content card 
             crd.addContentObj(content);
 
@@ -348,7 +394,7 @@ public class GUI {
         // Processing input
         String userTitle = formResults.get(1);
 
-        // Finding the contentCrad assoceaed to the title 
+        // Finding the contentCard assoceaed to the title 
         this.updateContentCards();
         for (Card crd : this.contentCards) {
             if (crd.cnt.getName().equals(userTitle)) {
@@ -385,11 +431,9 @@ public class GUI {
     }
 
     /** Visualy sets up the GUI */
-    public void setupGUI() {            
+    public void setupMenu() {            
         // Background
-        this.setColour(BG_COLOR);
-        UI.fillRect(0, 0, 10000, 10000);      // FIXME: (drawing and clearing the backgroud) drawing the background colour
-        this.drawExitButton();
+        this.setupGUI();
 
         // Card Properties 
         final int PADDING = 40;                            // card pading 
@@ -399,7 +443,7 @@ public class GUI {
         int cardHeight = 100;                                       // card height 
         int row = 0;
         
-        // Itterating through and drawing the cards 
+        // Itterating through and drawing the menu cards 
         for (Card card : this.buttons) {
             int btnIndex = card.id; 
 
@@ -417,6 +461,12 @@ public class GUI {
             // Drawing the card (button inside the card) to the GUI
             this.drawButton(card);
         }
+    }
+
+    // Clears and draws the exit button
+    public void setupGUI() { 
+        this.clearGUI(); 
+        this.drawExitButton();
     }
 
     /** Draws button with text on it usign some params  
@@ -463,6 +513,32 @@ public class GUI {
             UI.setFontSize(FONTSIZE);
             UI.drawString(btnText, (btnPosX + 10), (btnPosY + FONTPADDING)); 
         } 
+        // viewAllContent() nav buttons
+        if (type.equalsIgnoreCase("nav")) {
+            // Menu button properties
+            final int FONTSIZE = 18;
+            final int FONTPADDING = 28;
+            int buttonWidth = 100;
+            int buttonHeight = FONTSIZE + FONTPADDING;
+
+            // Setting the button positional values
+            int btnPosX = cardX;
+            int btnPosY = cardY;
+
+            // Assigning the buttons posional values for the doMouse method
+            card.addBtn(btnPosX, btnPosY, buttonWidth, buttonHeight);
+
+            // Drawing the button
+            // Button Border TESTING: 
+            this.setColour("#870000");
+            UI.fillRect(btnPosX, btnPosY, buttonWidth, buttonHeight);
+
+            // Printing text on the buttons
+            this.setColour("#ffffff");
+            UI.setFontSize(FONTSIZE);
+            UI.drawString(btnText, (btnPosX + 10), (btnPosY + FONTPADDING));
+        }
+        
         // Content button 
         if (type.equalsIgnoreCase("content")) { 
             // Menu button properties
@@ -696,12 +772,41 @@ public class GUI {
         else if (this.GUIstate.equals("view content")) {
             // Exit view content on mouse click
             if (action.equals("clicked")) {
+                // Next and Previous pages checking: 
+                for (Card nav : this.navBtns) {
+                    if (checkButtonClick(x, y, nav)) {
+                        int contentAmount = this.contentCards.size(); 
+
+                        if (nav.btnText.equalsIgnoreCase("Next Page")) {
+                            // Add one to the page number if
+                            if (this.page <= contentAmount) {   // boundary checking 
+                                this.page++; 
+                                 
+                                // Redraw the page
+                                this.setupGUI();
+                                this.viewAllContentGUI();
+                            }
+                        }
+
+                        if (nav.btnText.equalsIgnoreCase("Prev Page")) {
+                            // Minus one from the page number 
+                            if (this.page > 1) {
+                                this.page--;
+                                
+                                // Redraw the page 
+                                this.setupGUI();
+                                this.viewAllContentGUI();
+                            }
+                        }
+                    }
+                }
+
                 // Quit checking 
                 if (checkButtonClick(x, y, this.exitButton)) {
                     UI.quit();
                 }
 
-                this.setupGUI(); 
+                this.setupMenu(); 
                 this.GUIstate = "menu"; 
             }
         }
@@ -714,7 +819,7 @@ public class GUI {
                     UI.quit();
                 }
 
-                this.setupGUI();
+                this.setupMenu();
                 this.GUIstate = "menu";
             }
         }
@@ -743,7 +848,9 @@ public class GUI {
         this.buttons.add(new Card(2, "Find Content", "menu"));
         this.buttons.add(new Card(3, "Change Rating", "menu")); 
         this.buttons.add(new Card(4, "Recommendations", "menu"));
-        this.buttons.add(new Card(5, "Quit", "menu"));
+        this.buttons.add(new Card(6, "Credits", "menu"));       // TODO: 
+        this.buttons.add(new Card(7, "Quit", "menu"));
+
     }
 
     /** Sets the color using a hex code */
@@ -760,6 +867,7 @@ public class GUI {
 
     /** DEBUGGING: method */
     private void wait(int ms) {
+        // Credit: https://stackoverflow.com/questions/24104313/how-do-i-make-a-delay-in-java
         try {
             Thread.sleep(ms);
         } catch (InterruptedException ex) {
@@ -771,3 +879,13 @@ public class GUI {
         new GUI(); 
     }
 }
+
+
+
+/** Credits: 
+ *      UiBooster:  https://github.com/Milchreis/UiBooster/blob/master/README.md#form-dialog 
+ *      ECS100:     ECS100 Documentation
+ * 
+ * 
+ * 
+ */ 
