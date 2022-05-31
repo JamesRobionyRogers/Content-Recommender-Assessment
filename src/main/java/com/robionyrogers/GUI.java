@@ -28,6 +28,7 @@ public class GUI {
     private ArrayList<Card> buttons = new ArrayList<Card>();       
     private ArrayList<Card> contentCards = new ArrayList<Card>();   // ArrayList containing cards of content objs 
     private Card exitButton = new Card(0, "quit", "quit");
+    private Card backButton = new Card(0, "back", "back");
     // View all content fields 
     private ArrayList<Card> navBtns = new ArrayList<Card>();
     private int page = 1; 
@@ -65,7 +66,6 @@ public class GUI {
         // DEBUGGING: 
         this.setColour("#FFFFFF");
         UI.drawLine(DISPLAY_WIDTH, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-
     }
 
     /** GUI component of the addCard method in the Collection class */
@@ -76,7 +76,8 @@ public class GUI {
         final int STEP = 1;
         ArrayList<String> formResults = new ArrayList<String>(); 
 
-        Form form = this.booster.createForm("Add Content").addLabel("Add a new Movie/TV Show")
+        UiBooster formBooster = new UiBooster();
+        Form form = formBooster.createForm("Add Content").addLabel("Add a new Movie/TV Show")
                     .addText("Name of the content:")
                     .addText("Director / Artist")
                     .addText("Genres:   *seperated by commas*")
@@ -103,7 +104,7 @@ public class GUI {
         double rating = Double.parseDouble(formResults.get(4));
 
         // Processing grnreText to an ArrayList
-        ArrayList<String> genres = new ArrayList<String>(Arrays.asList(genreText.split(" , ")));
+        ArrayList<String> genres = new ArrayList<String>(Arrays.asList(genreText.split(", ")));
         
         // Checking if the added content is valid 
         if (!checkContentNull(name, creator)) {
@@ -113,7 +114,7 @@ public class GUI {
         }
 
         else {
-            UI.printMessage(" Content Failed to Add!"); 
+            UI.printMessage("Content Failed to Add!"); 
         }
         
     }
@@ -135,7 +136,7 @@ public class GUI {
         prevPage.addCard(0, (DISPLAY_HEIGHT - cardHeight), cardWidth, cardHeight);
         
         // Adding the nav buttons to the navBtns list     : = new ArrayList<Card>(Arrays.asList(nextPage, prevPage));
-        if (!this.navBtns.contains(nextPage) && !this.navBtns.contains(prevPage)) {
+        if (this.navBtns.size() < 2) {
             this.navBtns.add(nextPage);
             this.navBtns.add(prevPage);
         }
@@ -150,33 +151,26 @@ public class GUI {
         // Updating the contnet cards
         this.updateContentCards();
 
-        // Drawing cards to the screen 
-        for (Card crd : this.contentCards) {
-            // Defining the accepted ID's 
-            int startingAcceptedID = (this.page * 4)-1; 
-            ArrayList<Integer> acceptedIDs = new ArrayList<Integer>(Arrays.asList(startingAcceptedID, startingAcceptedID-1, startingAcceptedID-2, startingAcceptedID-3));
-            
-            // Checking if the card should be printed 
-            if (acceptedIDs.contains(crd.id)) {
-                cardIndx++;
-                // crd.addCard(cardX, cardY, cardWidth, cardHeight);       // TESTING: changing the card pos for correct posistioning on page 2+ 
-                this.drawButton(crd);
+        // Setting up the cards vairables
+        Card crd = this.contentCards.get(pageNum); 
+        String initialType = crd.type;
 
-                // Adding navigation buttons for content thats
-                if (cardIndx == 4) {
-                    // Printing out the navigation buttons
-                    for (Card nav : this.navBtns) {
-                        this.drawButton(nav);
-                    }
+        crd.type = "single content";
 
-                    break; // breaked out of the for loop
-                }
+        // Drawing card to the screen 
+        this.drawButton(crd);
 
-            }
-            }
-            
-            
-        
+        // Draw the page number 
+        this.drawPageNumber();
+
+        // Resetting the card type
+        crd.type = initialType;
+
+        // Printing out the navigation buttons
+        for (Card nav : this.navBtns) {
+            this.drawButton(nav);
+        }
+                    
     }
 
     private void updateContentCards() {
@@ -331,16 +325,13 @@ public class GUI {
                 btn.type = "single content";
 
 
-                this.clearGUI();
-                UI.repaintAllGraphics();
+                this.setupGUI();
                 this.drawButton(btn);
 
                 // Resetting the card type 
                 btn.type = initialType; 
             }
         }
-
-        this.drawExitButton();
     }
 
     public void getRecommendationsGUI() {
@@ -423,11 +414,52 @@ public class GUI {
         }
 
         // Printing out the similar content cards
-        this.clearGUI();
-        this.drawExitButton();
+        this.setupGUI();
         for (Card crd : similarContent) {
             this.drawButton(crd);
         }
+    }
+
+    /** Displaying the credits to the GUI */
+    public void displayCreditsGUI() {
+        // Setting up the GUI 
+        this.setupGUI();
+        this.GUIstate = "view content";
+
+        // Setting up the text 
+        UI.setFontSize(30);
+        this.setColour("#ffffff");
+
+        // Setting up Card
+        int crdPosX = 20;
+        int crdPosY = 35;
+        int border = 10;
+        int padding = 20;
+        int cardWidth = DISPLAY_WIDTH - (2*padding); 
+        int cardHeight = DISPLAY_HEIGHT - (2*padding)-20; 
+         
+        // Button Border
+        this.setColour("#870000");
+        UI.fillRect(crdPosX, crdPosY, cardWidth, cardHeight);
+
+        // Setting the new positional values for the inner button
+        crdPosX = crdPosX + border;
+        crdPosY = crdPosY + border;
+
+        // Solid Button Inner
+        this.setColour("#E30032");
+        UI.fillRect(crdPosX, crdPosY, (cardWidth - (2 * border)), (cardHeight - (2 * border)));
+
+        // Crediting  
+        int xValue = 50;
+        this.setColour("#FFFFFF");
+        UI.drawString("13DTC Project Management Internal (AS91901) 2021", xValue-18, 85);
+
+        UI.drawString("ECS100 Library Provided by Victoria University", xValue, 200);  
+        UI.drawString("UiBooster Library Provided by Milchreis (GitHub)", xValue, 250);
+        UI.drawString("GitHub Copilot Provided by GitHub", xValue, 300);
+
+        UI.drawString("Created & Designed By: James Robiony-Rogers", xValue, 425);
     }
 
     /** Visualy sets up the GUI */
@@ -465,8 +497,11 @@ public class GUI {
 
     // Clears and draws the exit button
     public void setupGUI() { 
-        this.clearGUI(); 
-        this.drawExitButton();
+        this.clearGUI();            // erasing all the drwaring on the GUI 
+        this.drawExitButton();      // drawing the exit button
+        this.drawBackButton();      // drawing the back button
+        UI.printMessage("");        // clearing the message bar
+        UI.setDivider(0);           // removing the GUI console
     }
 
     /** Draws button with text on it usign some params  
@@ -678,6 +713,7 @@ public class GUI {
         }
     }
 
+    /** Draws a cross in the top rght corner of the screen used as an exit button  */
     public void drawExitButton() {
         // Setting vairables: 
         final int SIZE = 30;    // width and height 
@@ -695,6 +731,40 @@ public class GUI {
         this.exitButton.addCard(posX, 0, SIZE, SIZE);
         this.exitButton.addBtn(posX, 0, SIZE, SIZE);
     } 
+
+    /** Draws a backwards sign in the top left corner of the screen used as a back button */
+    public void drawBackButton() {
+        // Setting vairables: 
+        final int SIZE = 30;    // width and height 
+        int posX = 15;
+        int posY = SIZE-4; 
+
+        // Setting colour and font sizes
+        this.setColour("#FFFFFF");      // white colour 
+        UI.setFontSize(SIZE);
+
+        // Drawing the X in the top right hand corner 
+        UI.drawString("‹", posX, posY);
+
+        // Adding properties to the obj
+        this.backButton.addCard(posX, 0, SIZE, SIZE);
+        this.backButton.addBtn(posX, 0, SIZE, SIZE);
+    }
+    
+    /** Draw the page number to the top middle of the GUI */
+    public void drawPageNumber() {
+        // Setting vairables: 
+        final int SIZE = 18;    // width and height 
+        int posX = DISPLAY_WIDTH/2 - SIZE;
+        int posY = 25; 
+
+        // Setting colour and font sizes
+        this.setColour("#FFFFFF");      // white colour 
+        UI.setFontSize(SIZE);
+
+        // Drawing the X in the top right hand corner 
+        UI.drawString("Page: " + String.valueOf(this.page), posX, posY);
+    }
 
     /** Checks if the card has been clicked */
     public boolean checkButtonClick(double mouseX, double mouseY, Card crd) {
@@ -714,6 +784,8 @@ public class GUI {
         // User is outside the container
         return false; 
     }
+
+
 
     /** Checks for user mouse input on the GUI
      * @param action
@@ -754,6 +826,10 @@ public class GUI {
                             this.getRecommendationsGUI();
                         }
 
+                        else if (btn.btnText.equals("Credits")) {
+                            this.displayCreditsGUI();
+                        }
+
                         else if (btn.btnText.equalsIgnoreCase("Quit")) {
                             UI.quit();
                         }
@@ -779,21 +855,45 @@ public class GUI {
 
                         if (nav.btnText.equalsIgnoreCase("Next Page")) {
                             // Add one to the page number if
-                            if (this.page <= contentAmount) {   // boundary checking 
+                            if (this.page < contentAmount-1) {   // boundary checking 
                                 this.page++; 
                                  
                                 // Redraw the page
                                 this.setupGUI();
                                 this.viewAllContentGUI();
                             }
+                            
+                            else {
+                                // Send a message to the user that they are on the last page
+                                // UI.printMessage("You are on the last page");
+
+                                // Send the user to the first page 
+                                this.page = 1;
+
+                                // Redraw the page
+                                this.setupGUI();
+                                this.viewAllContentGUI();
+                            }
                         }
 
-                        if (nav.btnText.equalsIgnoreCase("Prev Page")) {
+                        else if (nav.btnText.equalsIgnoreCase("Prev Page")) {
                             // Minus one from the page number 
                             if (this.page > 1) {
                                 this.page--;
                                 
                                 // Redraw the page 
+                                this.setupGUI();
+                                this.viewAllContentGUI();
+                            }
+
+                            else {
+                                // Send a message that the user is on the first page
+                                // UI.printMessage("You are on the first page");
+
+                                // Send the user to the last page 
+                                this.page = contentAmount-1;
+
+                                // Redraw the page
                                 this.setupGUI();
                                 this.viewAllContentGUI();
                             }
@@ -806,21 +906,35 @@ public class GUI {
                     UI.quit();
                 }
 
-                this.setupMenu(); 
-                this.GUIstate = "menu"; 
+                // Checking if a user has clicked on the back button 
+                if (checkButtonClick(x, y, this.backButton)) {
+                    this.GUIstate = "menu";
+                    this.setupGUI();
+                }
+
             }
         }
         // Recommendations Screen
         else if (this.GUIstate.equals("recommendation")) {
             // Exit view content on mouse click
             if (action.equals("clicked")) {
-                // Quit checking
-                if (checkButtonClick(x, y, this.exitButton)) {
-                    UI.quit();
-                }
-
+                // Navigating back to the menu 
                 this.setupMenu();
                 this.GUIstate = "menu";
+            }
+        }
+
+        // Quiting the program if x is clicked
+        if (action.equals("clicked")) {
+            if (checkButtonClick(x, y, this.exitButton)) {
+                UI.quit();
+            }
+
+            // navigating back to the menu when back button is clicked
+            if (checkButtonClick(x, y, this.backButton)) {
+                this.GUIstate = "menu";
+                // this.setupGUI();
+                this.setupMenu();
             }
         }
         
@@ -848,7 +962,7 @@ public class GUI {
         this.buttons.add(new Card(2, "Find Content", "menu"));
         this.buttons.add(new Card(3, "Change Rating", "menu")); 
         this.buttons.add(new Card(4, "Recommendations", "menu"));
-        this.buttons.add(new Card(6, "Credits", "menu"));       // TODO: 
+        this.buttons.add(new Card(6, "Credits", "menu"));       
         this.buttons.add(new Card(7, "Quit", "menu"));
 
     }
@@ -867,7 +981,7 @@ public class GUI {
 
     /** DEBUGGING: method */
     private void wait(int ms) {
-        // Credit: https://stackoverflow.com/questions/24104313/how-do-i-make-a-delay-in-java
+        // Credit: https://stackoverflow.com/questions/24104313/how-do-i-make-a-delay-in-java  (user: joshua) & GitHub Copilot 
         try {
             Thread.sleep(ms);
         } catch (InterruptedException ex) {
@@ -883,9 +997,9 @@ public class GUI {
 
 
 /** Credits: 
- *      UiBooster:  https://github.com/Milchreis/UiBooster/blob/master/README.md#form-dialog 
- *      ECS100:     ECS100 Documentation
- * 
+ *      UiBooster:          https://github.com/Milchreis/UiBooster/blob/master/README.md#form-dialog 
+ *      ECS100:             ECS100 Documentation
+ *      GitHub Copilot:     via VS Code
  * 
  * 
  */ 

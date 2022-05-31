@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>com.github.Milchreis</groupId>
 			<artifactId>UiBooster</artifactId>
-			<version>1.13.2</version>
+			<version>1.14.3</version>
 		</dependency>
 
 		<dependency>
